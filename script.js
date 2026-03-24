@@ -963,6 +963,77 @@ function downloadImage() {
 }
 
 // ═══════════════════════════════════════════════════════
+//  STANDALONE COMPAT CHECKER (always visible on quiz page)
+// ═══════════════════════════════════════════════════════
+ 
+function checkCompatibilityStandalone() {
+  const c1 = document.getElementById('sa-code1').value.trim();
+  const c2 = document.getElementById('sa-code2').value.trim();
+  const resultEl = document.getElementById('sa-compat-result');
+  _renderCompatResult(c1, c2, resultEl);
+}
+ 
+// Shared render logic used by both checkers
+function _renderCompatResult(c1, c2, resultEl) {
+  if (!c1 || !c2) {
+    resultEl.style.display = 'block';
+    resultEl.innerHTML = '<span style="color:red;">⚠ Please enter both codes!</span>';
+    return;
+  }
+  const d1 = decodeCode(c1);
+  const d2 = decodeCode(c2);
+  if (!d1 || !d2) {
+    resultEl.style.display = 'block';
+    resultEl.innerHTML = '<span style="color:red;">⚠ One or both codes are invalid. Make sure you copied them correctly.</span>';
+    return;
+  }
+ 
+  const { overall, dims } = compatScore(d1.answers, d2.answers, d1.questions, d2.questions);
+  const label = compatLabel(overall);
+  const archetype1 = d1.gender === 'girlfriend' ? computeArchetypeGF(d1.answers) : computeArchetypeBF(d1.answers);
+  const archetype2 = d2.gender === 'girlfriend' ? computeArchetypeGF(d2.answers) : computeArchetypeBF(d2.answers);
+ 
+  const sortedDims = Object.entries(dims).sort((a,b)=>b[1]-a[1]);
+  const best3 = sortedDims.slice(0,3);
+  const worst3 = sortedDims.slice(-3).reverse();
+ 
+  let barsHtml = '';
+  Object.entries(dims).slice(0,8).forEach(([k,v]) => {
+    barsHtml += `
+      <div class="compat-bar-row">
+        <span class="compat-bar-label">${DIM_LABELS[k]||k}</span>
+        <div class="compat-bar-track">
+          <div class="compat-bar-fill" style="width:0%;background:${v>=70?'#00ff00':v>=45?'#ffff00':'#ff4444'}" data-target="${v}"></div>
+        </div>
+        <span class="compat-bar-pct">${v}%</span>
+      </div>`;
+  });
+ 
+  resultEl.style.display = 'block';
+  resultEl.innerHTML = `
+    <div style="text-align:center;margin-bottom:10px;">
+      <span style="color:var(--accent3);font-family:'Press Start 2P',monospace;font-size:8px;">COMPATIBILITY RESULT:</span><br>
+      <span class="compat-score">${overall}%</span>
+      <span style="color:var(--accent);font-family:'Press Start 2P',monospace;font-size:9px;display:block;">${label}</span>
+    </div>
+    <div style="margin:8px 0;color:var(--accent3);">PROFILE 1: ${archetype1} (${d1.gender})</div>
+    <div style="margin:8px 0;color:var(--accent3);">PROFILE 2: ${archetype2} (${d2.gender})</div>
+    <div style="margin-top:10px;color:var(--accent3);font-family:'Press Start 2P',monospace;font-size:8px;margin-bottom:6px;">[ DIMENSION BREAKDOWN ]</div>
+    <div class="compat-bars">${barsHtml}</div>
+    <div style="margin-top:10px;">
+      <span style="color:#00ff00;">✓ STRONGEST: ${best3.map(([k])=>DIM_LABELS[k]||k).join(', ')}</span><br>
+      <span style="color:#ff4444;">✗ DIFFERENCES: ${worst3.map(([k])=>DIM_LABELS[k]||k).join(', ')}</span>
+    </div>`;
+ 
+  setTimeout(() => {
+    resultEl.querySelectorAll('.compat-bar-fill').forEach(el => {
+      el.style.transition = 'width 1s ease';
+      el.style.width = el.dataset.target + '%';
+    });
+  }, 50);
+}
+
+// ═══════════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════════
 
