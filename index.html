@@ -114,6 +114,36 @@
 
   </div><!-- end quiz-page -->
 
+	  <!-- ══ ALWAYS-VISIBLE COMPATIBILITY CHECKER ══ -->
+  <div id="standalone-compat" class="win-panel" style="margin-top:16px;">
+    <div class="win-titlebar">
+      <span>💞 COMPATIBILITY_CHECKER.EXE</span>
+      <div class="win-titlebar-btns"><div class="win-btn">_</div><div class="win-btn">□</div><div class="win-btn">✕</div></div>
+    </div>
+    <div class="win-body">
+      <div style="font-family:'VT323',monospace;font-size:16px;color:#444;margin-bottom:10px;">
+        Already have two codes? Paste them below — no need to take the quiz first.
+      </div>
+      <div class="compat-section">
+        <div class="compat-title">[ ENTER TWO CODES TO CHECK COMPATIBILITY ]</div>
+        <div class="compat-inputs">
+          <div>
+            <div style="font-family:'Press Start 2P',monospace;font-size:8px;color:var(--accent3);margin-bottom:4px;">CODE 1:</div>
+            <input class="compat-input" id="sa-code1" type="text" placeholder="Paste first code here...">
+          </div>
+          <div>
+            <div style="font-family:'Press Start 2P',monospace;font-size:8px;color:var(--accent3);margin-bottom:4px;">CODE 2:</div>
+            <input class="compat-input" id="sa-code2" type="text" placeholder="Paste second code here...">
+          </div>
+        </div>
+        <div style="text-align:center;">
+          <button class="retro-btn primary" onclick="checkCompatibilityStandalone()" style="font-size:10px;">▶ CALCULATE COMPATIBILITY</button>
+        </div>
+        <div class="compat-result" id="sa-compat-result"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- ══ RESULTS PAGE ══ -->
   <div id="results-page">
 
